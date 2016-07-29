@@ -1,3 +1,13 @@
 from django.contrib import admin
+from fb_cookbot.models import Ingredient, Recipe
 
-# Register your models here.
+
+class RecipeAdmin(admin.ModelAdmin):
+    pass
+
+class IngredientAdmin(admin.ModelAdmin):
+    pass
+
+
+admin.site.register(Ingredient, IngredientAdmin)
+admin.site.register(Recipe, RecipeAdmin)
