@@ -18,9 +18,9 @@ def post_facebook_message(fbid, recevied_message):
     # Remove all punctuations, lower case the text and split it based on space
     # tokens = re.sub(r"[^a-zA-Z0-9\s]",' ',recevied_message).lower().split()
 
-    # user_details_url = "https://graph.facebook.com/v2.6/%s"%fbid
-    # user_details_params = {'fields':'first_name,last_name,profile_pic', 'access_token':PAGE_ACCESS_TOKEN}
-    # user_details = requests.get(user_details_url, user_details_params).json()
+    user_details_url = "https://graph.facebook.com/v2.6/%s"%fbid
+    user_details_params = {'fields':'first_name,last_name,profile_pic', 'access_token':PAGE_ACCESS_TOKEN}
+    user_details = requests.get(user_details_url, user_details_params).json()
 
     ingredients_list = recevied_message.split()
     excluded_ingredients = Ingredient.objects.exclude(name__in=ingredients_list)
@@ -29,7 +29,8 @@ def post_facebook_message(fbid, recevied_message):
     answer = ''
 
     for recipe in recipes:
-        answer = answer + recipe.name + ' '
+        answer = 'Dear ' + str(user_details['first_name']) + ' you can cook:\n' + answer + recipe.name + '\n' + recipe.url + '\n'
+
 
     post_message_url = 'https://graph.facebook.com/v2.6/me/messages?access_token=%s'%PAGE_ACCESS_TOKEN
     response_msg = json.dumps({"recipient":{"id":fbid}, "message":{"text":answer}})

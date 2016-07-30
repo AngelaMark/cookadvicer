@@ -10,6 +10,7 @@ class Ingredient(models.Model):
 
 class Recipe(models.Model):
     name = models.CharField(max_length=100)
+    url = models.URLField(blank=True)
     ingredients = models.ManyToManyField(Ingredient)
 
     def __str__(self):
