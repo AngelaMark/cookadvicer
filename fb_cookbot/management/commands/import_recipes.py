@@ -10,7 +10,6 @@ def get_link_image(page_url):
     try:
         page_content = urlopen(page_url).read().decode('utf8')
         if page_content.find('"og:image" content="') != -1:
-            print(page_content.find('"og:image" content="'))
             return page_content.split('"og:image" content="')[1].split('"')[0]
         else:
             return ''
@@ -40,15 +39,12 @@ class Command(BaseCommand):
                     )
 
                     recipe.save()
-                    print(recipe)
-                    print(recevied_message.get('id'))
-
+                    
                     for ingredient in recevied_message['extendedIngredients']:
                         ingredient_db, created = Ingredient.objects.update_or_create(
                             name=ingredient['name']
                         )
 
                         ingredient_db.save()
-                        print(ingredient_db)
             except urllib.error.HTTPError as e:
                 print("Raise error ", e)
