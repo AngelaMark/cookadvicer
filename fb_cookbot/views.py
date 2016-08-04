@@ -11,7 +11,7 @@ from django.utils.decorators import method_decorator
 from fb_cookbot.models import Recipe, Ingredient
 
 VERIFY_TOKEN = "2318934571"
-PAGE_ACCESS_TOKEN = "EAARjDuqWsMkBAEdG7xZAPDHbKPQ1ZA9ijvx7ceacY2nN7phhKLKi1WHOy5mw1N9jQ3P9OQt7yiTTcA9M7mUgpR2VA5kQZAjsZBObbZAiTajDdoZBGzm0ZCWDfPqmsUlU5spD0vW8OV2qSnA2coJaTOXGp2gbntkrr46ZCjTZCZBzoyXgZDZD"
+PAGE_ACCESS_TOKEN = "EAAD0kpLj8bEBALiqJAwI5OSn64ByZCwc44RZCjvCz76mayWM0ZCOBKjFZA1rLeZCcJ8KnnLsjomQP0VVPtg5bhToiKKx5wWmGlS3gUQxvRJ718JXURLN5OnZAbtLj1eBpYBLJCOtZCeSfWm9WJZCPV06xicwztkeCOGkZALTRHAYt1xWEfp3qafqx"
 
 # Helper function
 def post_facebook_message(fbid, recevied_message):
@@ -22,25 +22,68 @@ def post_facebook_message(fbid, recevied_message):
     user_details_params = {'fields':'first_name,last_name,profile_pic', 'access_token':PAGE_ACCESS_TOKEN}
     user_details = requests.get(user_details_url, user_details_params).json()
 
-    ingredients_list = recevied_message.split()
+    ingredients_list = recevied_message.split(',')
+    print(ingredients_list)
     excluded_ingredients = Ingredient.objects.exclude(name__in=ingredients_list)
+    print(excluded_ingredients)
     recipes = Recipe.objects.filter(ingredients__name__in=ingredients_list).exclude(ingredients=excluded_ingredients).distinct()
-
-    answer = ''
+    print(recipes)
+    '''answer = ''
 
     for recipe in recipes:
         answer = 'Dear ' + str(user_details['first_name']) + ' you can cook:\n' + answer + recipe.name + '\n' + recipe.url + '\n'
 
+    answer = 'Dear ' + str(user_details['first_name']) + ' you can cook:\n' '''
 
-    post_message_url = 'https://graph.facebook.com/v2.6/me/messages?access_token=%s'%PAGE_ACCESS_TOKEN
-    response_msg = json.dumps({"recipient":{"id":fbid}, "message":{"text":answer}})
+    post_message_url = 'https://graph.facebook.com/v2.6/me/messages?access_token=%s' % PAGE_ACCESS_TOKEN
+    msg = {
+        "recipient":{
+                   "id":fbid
+            },
+        "message":{
+           "attachment":{
+                    "type":"template",
+                    "payload":{
+                        "template_type":"generic",
+                        "elements":[]
+                        }
+                    }
+                }
+    }
+    elem_arrays = msg['message']["attachment"]["payload"]["elements"]
+
+    for recipe in recipes:
+        element_of_msg = {
+            "title": "Recipe title",
+            "image_url": "",
+            "subtitle": " ",
+            "buttons": [{
+                "type": "web_url",
+                "url": "",
+                "title": "Go to recipe"
+            },
+                {
+                    "type": "postback",
+                    "title": "Start Chatting",
+                    "payload": "USER_DEFINED_PAYLOAD"
+                }]
+        }
+        element_of_msg["title"] = recipe.name
+        element_of_msg["image_url"] = recipe.image_url
+        element_of_msg["buttons"][0]["url"] = recipe.url
+        print(element_of_msg)
+        elem_arrays.append(element_of_msg)
+        if len(elem_arrays) >= 10:
+            break
+    response_msg = json.dumps(msg)
     status = requests.post(post_message_url, headers={"Content-Type": "application/json"},data=response_msg)
     pprint(status.json())
 
 # Create your views here.
 class Cooker(generic.View):
     def get(self, request, *args, **kwargs):
-        if self.request.GET['hub.verify_token'] == '2318934571':
+        print(self.request.GET)
+        if self.request.GET['hub.verify_token'] == VERIFY_TOKEN:
             return HttpResponse(self.request.GET['hub.challenge'])
         else:
             return HttpResponse('Error, invalid token')
@@ -64,5 +107,8 @@ class Cooker(generic.View):
                     pprint(message)
                     # Assuming the sender only sends text. Non-text messages like stickers, audio, pictures
                     # are sent as attachments and must be handled accordingly.
-                    post_facebook_message(message['sender']['id'], message['message']['text'])
+                    try:
+                        post_facebook_message(message['sender']['id'], message['message']['text'])
+                    except KeyError:
+                        print("keyerror")
         return HttpResponse()
