@@ -51,7 +51,6 @@ def post_facebook_message(fbid, recevied_message):
                 }
     }
     elem_arrays = msg['message']["attachment"]["payload"]["elements"]
-
     for recipe in recipes:
         element_of_msg = {
             "title": "Recipe title",
