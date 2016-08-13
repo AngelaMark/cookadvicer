@@ -10,7 +10,6 @@ def get_link_image(page_url):
     try:
         page_content = urlopen(page_url).read().decode('utf8')
         if page_content.find('"og:image" content="') != -1:
-            print(page_content.find('"og:image" content="'))
             return page_content.split('"og:image" content="')[1].split('"')[0]
         else:
             return ''
@@ -22,7 +21,7 @@ def get_link_image(page_url):
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-        for id in range(100200, 101000):
+        for id in range(100000, 100010):
             try:
                 recevied_message = requests.get("https://webknox-recipes.p.mashape.com/recipes/%s/information" % id,
                                            headers={
