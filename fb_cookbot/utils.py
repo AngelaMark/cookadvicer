@@ -4,7 +4,6 @@ PAGE_ACCESS_TOKEN = "EAAD0kpLj8bEBALiqJAwI5OSn64ByZCwc44RZCjvCz76mayWM0ZCOBKjFZA
 
 FACEBOOK_API_URL = 'https://graph.facebook.com/v2.6/me/messages?access_token={}'.format(PAGE_ACCESS_TOKEN)
 
-
 class FacebookApi:
     @staticmethod
     def post_attachment(fbid,elements):
