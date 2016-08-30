@@ -39,3 +39,4 @@ wcwidth==0.1.7
 wheel==0.24.0
 wikipedia==1.4.0
 #xkit==0.0.0
+cryptography==1.2.3
