@@ -6,7 +6,7 @@ chardet==2.3.0
 colorama==0.3.3
 decorator==4.0.2
 dj-database-url==0.4.1
-Django==1.9.8
+Django==2.2.28
 django-picklefield==0.3.2
 django-q==0.7.18
 future==0.15.2
